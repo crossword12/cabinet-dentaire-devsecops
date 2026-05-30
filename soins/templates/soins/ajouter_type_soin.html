@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ajouter un soin au catalogue{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="card section-beige glass-card-home shadow p-4 mt-5">
+            <h2 class="mb-4 text-center home-title" style="color:#2975d1;">
+                <i class="bi bi-plus-circle"></i> Ajouter un soin
+            </h2>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger text-center mb-3">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    {{ form.nom.label_tag }}
+                    {{ form.nom }}
+                    {% if form.nom.errors %}
+                        <div class="text-danger small">{{ form.nom.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    {{ form.tarif.label_tag }}
+                    {{ form.tarif }}
+                    {% if form.tarif.errors %}
+                        <div class="text-danger small">{{ form.tarif.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    {{ form.taux_remboursement.label_tag }}
+                    {{ form.taux_remboursement }}
+                    {% if form.taux_remboursement.errors %}
+                        <div class="text-danger small">{{ form.taux_remboursement.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    {{ form.description.label_tag }}
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="text-danger small">{{ form.description.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="text-center mt-4 d-grid gap-2">
+                    <button type="submit" class="btn dl-btn-primary btn-lg">
+                        <i class="bi bi-check-circle me-1"></i> Ajouter au catalogue
+                    </button>
+                    <a href="{% url 'liste_soins' %}" class="btn btn-beige btn-lg">
+                        <i class="bi bi-arrow-left"></i> Retour
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

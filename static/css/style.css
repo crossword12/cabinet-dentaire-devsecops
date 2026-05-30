@@ -1,0 +1,252 @@
+:root {
+  --primary: #2975d1;
+  --dark: #1a2433;
+  --light-bg: #f5f9fd;
+  --white: #ffffff;
+  --gray: #6c757d;
+  --shadow: 0 4px 24px rgba(41, 117, 209, 0.08);
+  --radius: 1rem;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url("/static/images/bg-pro-dentaire3.jpg") no-repeat center center
+    fixed;
+  background-size: cover;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Navbar */
+.navbar {
+  background-color: var(--white);
+  box-shadow: var(--shadow);
+  border-bottom: 1px solid #dee2e6;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--primary) !important;
+}
+
+/* Boutons */
+.btn-outline-primary {
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+  transition: 0.2s;
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background-color: var(--primary);
+  color: var(--white);
+}
+
+/* Footer */
+footer {
+  background-color: #f8f9fa;
+  color: var(--gray);
+  font-size: 0.9rem;
+}
+
+/* Main */
+main.container {
+  flex-grow: 1;
+}
+
+/* Tables */
+.table {
+  background-color: var(--white);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.table thead {
+  background-color: #eef4fb;
+  color: var(--dark);
+  font-weight: 600;
+}
+.table td,
+.table th {
+  vertical-align: middle;
+}
+.table-hover tbody tr:hover {
+  background-color: #f1f7ff;
+}
+
+/* Alerts */
+.alert {
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+
+/* Cards / Forms */
+.card,
+.form-card {
+  background-color: rgba(255, 255, 255, 0.92);
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  /* Flou du fond pour un effet soft */
+  backdrop-filter: blur(3px);
+}
+
+/* Inputs */
+.form-control {
+  border-radius: 0.6rem;
+  border: 1px solid #dce3ea;
+  background-color: #fafdff;
+  font-size: 1rem;
+  color: var(--dark);
+}
+.form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 0.15rem rgba(41, 117, 209, 0.15);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar-nav {
+    text-align: center;
+  }
+  .dropdown-menu {
+    text-align: left;
+  }
+  .card,
+  .form-card {
+    padding: 1rem;
+  }
+}
+
+/* Tableau historique profil sur fond blanc et plus large */
+.profil-card {
+  background: #fff !important;
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 24px rgba(41, 117, 209, 0.1);
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  max-width: 600px;
+  margin: 32px auto;
+}
+
+/* Largeur du tableau responsive */
+.profil-card table {
+  width: 100%;
+  background: #fff;
+  border-radius: 0.7rem;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(41, 117, 209, 0.08);
+}
+
+/* Optionnel: centrer le profil sur la page */
+@media (min-width: 768px) {
+  .profil-card {
+    max-width: 750px;
+  }
+}
+
+/* Padding dans les cellules */
+.profil-card table th,
+.profil-card table td {
+  padding: 0.85rem 1.2rem;
+}
+
+/* Pour la carte du profil dentiste et tableau historique */
+.profil-card {
+  background: #fff !important;
+  border-radius: 1.3rem;
+  box-shadow: 0 8px 32px rgba(41, 117, 209, 0.11);
+  padding: 2.5rem 2.3rem 2.1rem 2.3rem;
+  max-width: 750px;
+  width: 100%;
+  margin: 0 auto;
+  transition: box-shadow 0.2s;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .profil-card {
+    max-width: 95vw;
+    padding: 1.1rem 0.5rem;
+  }
+}
+
+/* Amélioration du tableau */
+.profil-card .table {
+  background: #fff;
+  border-radius: 0.7rem;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(41, 117, 209, 0.08);
+  margin-bottom: 0;
+}
+
+.profil-card .table th,
+.profil-card .table td {
+  padding: 0.8rem 1.15rem;
+  border-bottom: 1px solid #f0f3f8;
+}
+
+.profil-card .table th {
+  background: #f6f9fe;
+  color: #2975d1;
+  font-weight: 600;
+  font-size: 1.07rem;
+}
+
+.profil-card .table tr:last-child td {
+  border-bottom: none;
+}
+.profil-glass-card {
+  background: rgba(255, 255, 255, 0.57);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 1.8rem;
+  box-shadow: 0 8px 36px rgba(41, 117, 209, 0.11);
+  padding: 2.7rem 2.7rem 2.1rem 2.7rem;
+  max-width: 850px;
+  width: 100%;
+  margin: 40px auto 32px auto;
+  border: 1.5px solid rgba(180, 210, 255, 0.18);
+  transition: box-shadow 0.2s;
+}
+
+@media (max-width: 992px) {
+  .profil-glass-card {
+    max-width: 99vw;
+    padding: 1.2rem 0.6rem;
+  }
+}
+
+/* Pour que le tableau à l’intérieur soit toujours bien blanc, large et arrondi */
+.profil-glass-card .profil-card {
+  background: #fff !important;
+  border-radius: 1.1rem;
+  box-shadow: 0 4px 24px rgba(41, 117, 209, 0.09);
+  padding: 2rem 1rem 1.5rem 1rem;
+  margin-top: 1.7rem;
+}
+
+.profil-glass-card .table {
+  background: #fff;
+  border-radius: 0.7rem;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(41, 117, 209, 0.08);
+  margin-bottom: 0;
+}
+
+.profil-glass-card .table th,
+.profil-glass-card .table td {
+  padding: 0.85rem 1.2rem;
+  border-bottom: 1px solid #f0f3f8;
+}
+
+.profil-glass-card .table th {
+  background: #f6f9fe;
+  color: #2975d1;
+  font-weight: 600;
+  font-size: 1.07rem;
+}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Mes Soins - Cabinet Dentaire{% endblock %}
+
+{% block content %}
+<div class="container home-viewport py-4">
+    <div class="main-card px-2 py-4">
+        <h2 class="text-center mb-4 home-title" style="color:#2975d1;">
+            <i class="bi bi-clipboard2-check"></i> Mes soins dentaires
+        </h2>
+        {% if soins %}
+            <div class="table-responsive">
+                <table class="table align-middle table-hover rounded-4 overflow-hidden">
+                    <thead>
+                        <tr>
+                            <th>Date du soin</th>
+                            <th>Type</th>
+                            <th>Dentiste</th>
+                            <th>Tarif</th>
+                            <th>Remb.</th>
+                            <th>Statut</th>
+                            <th class="text-center">Fiche</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for soin in soins %}
+                        <tr>
+                            <td>{{ soin.rendezvous.date_heure|date:"d/m/Y H:i" }}</td>
+                            <td>{{ soin.type_soin.nom }}</td>
+                            <td>
+                                {% if soin.dentiste %}
+                                    {{ soin.dentiste.get_full_name|default:soin.dentiste.username }}
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark">
+                                    {{ soin.type_soin.tarif|floatformat:2 }} DH
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary-light text-primary">
+                                    {{ soin.type_soin.taux_remboursement }}%
+                                </span>
+                            </td>
+                            <td>
+                                {% if soin.statut == 'en_attente' %}
+                                    <span class="badge bg-warning text-dark">En attente</span>
+                                {% elif soin.statut == 'validé' %}
+                                    <span class="badge bg-success">Validé</span>
+                                {% elif soin.statut == 'refusé' %}
+                                    <span class="badge bg-danger">Refusé</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inconnu</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <a href="{% url 'fiche_soin' soin.pk %}" class="btn btn-outline-info btn-sm rounded-pill" title="Voir le détail">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-center text-muted mb-0">Aucun soin n’a été enregistré pour vous pour le moment.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

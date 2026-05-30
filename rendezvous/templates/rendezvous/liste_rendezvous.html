@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Liste des rendez-vous{% endblock %}
+
+{% block content %}
+<div class="card p-4 shadow mb-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 gap-3">
+        <h2 class="mb-0 fw-bold text-primary">
+            <i class="bi bi-calendar-week"></i> Rendez-vous à venir
+        </h2>
+        <a href="{% url 'ajouter_rendezvous' %}" class="btn btn-primary btn-lg">
+            <i class="bi bi-plus-circle me-1"></i> Nouveau
+        </a>
+    </div>
+    <form method="get" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="search" value="{{ request.GET.search }}" class="form-control" placeholder="Recherche (nom, prénom, soin)...">
+            <button type="submit" class="btn btn-outline-primary"><i class="bi bi-search"></i></button>
+        </div>
+    </form>
+    <div class="table-responsive">
+        <table class="table align-middle table-hover">
+            <thead>
+                <tr>
+                    <th>Date/Heure</th>
+                    <th>Patient</th>
+                    <th>Soin demandé</th>
+                    <th>Statut</th>
+                    <th>Demande patient</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rdv in rendezvous %}
+                <tr{% if rdv.action_patient == 'modification' or rdv.action_patient == 'annulation' %} style="background: #fff8e1;"{% endif %}>
+                    <td><b>{{ rdv.date_heure|date:"d/m/Y H:i" }}</b></td>
+                    <td>{{ rdv.patient.nom }} {{ rdv.patient.prenom }}</td>
+                    <td>
+                        {% if rdv.soin %}
+                            <span class="fw-semibold">{{ rdv.soin.type_soin.nom }}</span>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if rdv.statut == 'en_attente' %}
+                            <span class="badge bg-warning text-dark">En attente</span>
+                        {% elif rdv.statut == 'confirmé' %}
+                            <span class="badge bg-success">Confirmé</span>
+                        {% elif rdv.statut == 'refusé' %}
+                            <span class="badge bg-danger">Refusé</span>
+                        {% elif rdv.statut == 'annulé' %}
+                            <span class="badge bg-secondary">Annulé</span>
+                        {% elif rdv.statut == 'terminé' %}
+                            <span class="badge bg-success">Terminé</span>
+                        {% else %}
+                            <span class="badge bg-light text-dark">Inconnu</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if rdv.action_patient == "modification" %}
+                            <span class="badge bg-warning text-dark">
+                                <i class="bi bi-pencil-square"></i> Demande de modification
+                            </span><br>
+                            <small class="text-muted">→ {{ rdv.nouvelle_date|date:"d/m/Y H:i" }}</small>
+                        {% elif rdv.action_patient == "annulation" %}
+                            <span class="badge bg-danger">
+                                <i class="bi bi-x-circle"></i> Demande d'annulation
+                            </span>
+                        {% else %}
+                            <span class="badge bg-light text-muted">Aucune</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if rdv.action_patient != 'aucune' and rdv.action_patient %}
+                            <span class="text-warning" title="Action demandée par le patient">
+                                <i class="bi bi-exclamation-triangle-fill fs-5 me-1"></i>
+                            </span>
+                        {% endif %}
+
+                        <a href="{% url 'voir_rendezvous' rdv.pk %}" class="btn btn-outline-primary btn-sm rounded-pill me-1" title="Voir">
+                            <i class="bi bi-eye"></i>
+                        </a>
+
+                        {% if rdv.statut == "confirmé" and rdv.action_patient == "aucune" %}
+                            <form action="{% url 'terminer_rendezvous' rdv.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-success btn-sm rounded-pill me-1"
+                                        title="Marquer comme terminé"
+                                        onclick="return confirm('Marquer ce rendez-vous comme terminé ?');">
+                                    <i class="bi bi-check2-square"></i> Terminé
+                                </button>
+                            </form>
+                        {% endif %}
+
+                        {% if rdv.statut == "en_attente" and rdv.action_patient == "aucune" %}
+                            <!-- Boutons staff pour validation/refus d'une nouvelle demande -->
+                            <form action="{% url 'valider_rendezvous' rdv.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success btn-sm rounded-pill me-1" title="Valider">
+                                    <i class="bi bi-check-circle"></i> Valider
+                                </button>
+                            </form>
+                            <form action="{% url 'refuser_rendezvous' rdv.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-secondary btn-sm rounded-pill" title="Refuser">
+                                    <i class="bi bi-x-circle"></i> Refuser
+                                </button>
+                            </form>
+                        {% elif rdv.action_patient == "modification" %}
+                            <form action="{% url 'valider_modification_rendezvous' rdv.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success btn-sm rounded-pill me-1" title="Valider">
+                                    <i class="bi bi-check-circle"></i> Valider
+                                </button>
+                            </form>
+                            <form action="{% url 'refuser_demande_rendezvous' rdv.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-secondary btn-sm rounded-pill" title="Refuser">
+                                    <i class="bi bi-x-circle"></i> Refuser
+                                </button>
+                            </form>
+                        {% elif rdv.action_patient == "annulation" %}
+                            <form action="{% url 'valider_annulation_rendezvous' rdv.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm rounded-pill me-1" title="Valider">
+                                    <i class="bi bi-check-circle"></i> Valider
+                                </button>
+                            </form>
+                            <form action="{% url 'refuser_demande_rendezvous' rdv.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-secondary btn-sm rounded-pill" title="Refuser">
+                                    <i class="bi bi-x-circle"></i> Refuser
+                                </button>
+                            </form>
+                        {% endif %}
+
+                        <a href="{% url 'modifier_rendezvous' rdv.pk %}" class="btn btn-outline-primary btn-sm rounded-pill me-1" title="Modifier">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form action="{% url 'supprimer_rendezvous' rdv.pk %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill" title="Supprimer" onclick="return confirm('Confirmer la suppression de ce rendez-vous ?');">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">Aucun rendez-vous trouvé.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-4">
+        {% if rendezvous.has_other_pages %}
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {% if rendezvous.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ rendezvous.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">&laquo;</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                    {% endif %}
+                    {% for num in rendezvous.paginator.page_range %}
+                        {% if rendezvous.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if rendezvous.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ rendezvous.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">&raquo;</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

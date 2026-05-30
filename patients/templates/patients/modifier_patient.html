@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Modifier fiche patient{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height:80vh;">
+    <div class="card section-beige shadow glass-card-home p-4" style="width:100%; max-width:500px;">
+        <div class="login-icon mb-2 text-center">
+            <i class="bi bi-person-gear"></i>
+        </div>
+        <h2 class="mb-4 text-center home-title" style="color:#2975d1;">Modifier fiche patient</h2>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                {% if field.name != "username" and field.name != "password" %}
+                    <div class="mb-3">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger small">{{ field.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger text-center">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="mt-4 d-flex justify-content-center gap-3">
+                <button type="submit" class="btn dl-btn-primary w-50">
+                    <i class="bi bi-check-circle"></i> Enregistrer
+                </button>
+                <a href="{% url 'voir_patient' patient.pk %}" class="btn btn-beige w-25">
+                    <i class="bi bi-arrow-left"></i> Retour fiche
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}Fiche patient{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-center" style="min-height:76vh;">
+    <div class="w-100" style="max-width:970px;">
+        <div class="profile-glass card section-beige shadow p-4 mb-4">
+            <div class="login-icon mb-2 text-center">
+                <i class="bi bi-person-circle"></i>
+            </div>
+            <h2 class="mb-4 text-center" style="color:#2975d1;font-weight:700;">Fiche patient</h2>
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Nom</dt>
+                <dd class="col-sm-8">{{ patient.nom }}</dd>
+                <dt class="col-sm-4">Prénom</dt>
+                <dd class="col-sm-8">{{ patient.prenom }}</dd>
+                <dt class="col-sm-4">Date de naissance</dt>
+                <dd class="col-sm-8">{{ patient.date_naissance|date:"d/m/Y" }}</dd>
+                <dt class="col-sm-4">Téléphone</dt>
+                <dd class="col-sm-8">{{ patient.telephone|default:"-" }}</dd>
+                <dt class="col-sm-4">Email</dt>
+                <dd class="col-sm-8">{{ patient.email }}</dd>
+                <dt class="col-sm-4">Adresse</dt>
+                <dd class="col-sm-8">{{ patient.adresse|default:"-" }}</dd>
+                <dt class="col-sm-4">Date d'inscription</dt>
+                <dd class="col-sm-8">{{ patient.date_inscription|date:"d/m/Y" }}</dd>
+            </dl>
+            <div class="text-center mt-4">
+                <a href="{% url 'modifier_patient' patient.pk %}" class="btn dl-btn-primary me-2 w-50 mb-2">
+                    <i class="bi bi-pencil"></i> Modifier fiche
+                </a>
+                <a href="{% url 'liste_patients' %}" class="btn btn-beige w-25 mb-2">
+                    <i class="bi bi-arrow-left"></i> Retour
+                </a>
+            </div>
+        </div>
+
+        <!-- Bloc historique RDV + soins associés -->
+        <div class="profile-glass card section-beige shadow p-4 mb-4">
+            <h4 class="mb-3" style="color:#2975d1;">
+                <i class="bi bi-clock-history"></i> Historique des rendez-vous et soins
+            </h4>
+            {% if rdvs %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="bg-white">
+                            <tr>
+                                <th>Date/Heure</th>
+                                <th>Statut RDV</th>
+                                <th>Soin associé</th>
+                                <th>Dentiste</th>
+                                <th>Notes</th>
+                                {% if user.profile.role in "secretaire dentiste" %}
+                                    <th>Actions</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rdv in rdvs %}
+                                <tr>
+                                    <td><b>{{ rdv.date_heure|date:"d/m/Y H:i" }}</b></td>
+                                    <td>
+                                        {% if rdv.statut == 'planifié' %}
+                                            <span class="badge bg-primary">Planifié</span>
+                                        {% elif rdv.statut == 'effectué' %}
+                                            <span class="badge bg-success">Effectué</span>
+                                        {% elif rdv.statut == 'annulé' %}
+                                            <span class="badge bg-secondary">Annulé</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark">{{ rdv.statut|capfirst }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if rdv.soin %}
+                                            <span class="badge bg-light text-dark">
+                                                {{ rdv.soin.type_soin.nom }}
+                                            </span>
+                                            <a href="{% url 'fiche_soin' rdv.soin.pk %}" class="btn btn-outline-primary btn-sm ms-1">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">Aucun</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if rdv.soin and rdv.soin.dentiste %}
+                                            Dr {{ rdv.soin.dentiste.last_name|capfirst }}
+                                        {% else %}
+                                            <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if rdv.soin %}
+                                            {{ rdv.soin.notes|default:"—" }}
+                                        {% else %}
+                                            <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                    {% if user.profile.role in "secretaire dentiste" %}
+                                    <td>
+                                        {% if rdv.soin %}
+                                            <a href="{% url 'modifier_soin' rdv.soin.pk %}" class="btn btn-outline-primary btn-sm me-1" title="Modifier">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{% url 'supprimer_soin' rdv.soin.pk %}" class="btn btn-outline-danger btn-sm" title="Supprimer">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                {% if rdvs.has_other_pages %}
+                    <nav>
+                        <ul class="pagination justify-content-center mt-3">
+                            {% if rdvs.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ rdvs.previous_page_number }}">&laquo;</a>
+                                </li>
+                            {% endif %}
+                            {% for num in rdvs.paginator.page_range %}
+                                {% if rdvs.number == num %}
+                                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                                {% else %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if rdvs.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ rdvs.next_page_number }}">&raquo;</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <p class="text-muted">Aucun rendez-vous trouvé pour ce patient.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

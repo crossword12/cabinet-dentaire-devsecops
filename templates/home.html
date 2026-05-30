@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Accueil - Cabinet Dentaire{% endblock %}
+
+{% block content %}
+<section class="py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <h1 class="fw-bold display-5 text-primary mb-3">
+          Bienvenue au Cabinet Dentaire
+        </h1>
+        <p class="lead mb-3">
+          Prise de rendez-vous 24/7, espace patient sécurisé et confidentiel. Accédez à votre dossier de soins à tout moment.
+        </p>
+        <p class="text-muted">
+          Profitez d'un service moderne, d'une interface claire et intuitive, et de professionnels à votre écoute.
+        </p>
+
+        {% if user.is_authenticated %}
+          <a href="{% url 'dashboard' %}" class="btn btn-outline-primary btn-lg shadow-sm">
+            Mon espace personnel
+          </a>
+        {% else %}
+          <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg shadow-sm">
+            Connexion
+          </a>
+          <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg shadow-sm">
+            Créer un compte
+          </a>
+          <a href="{% url 'liste_soins' %}" class="btn btn-outline-primary btn-lg shadow-sm">
+            Nos soins
+          </a>
+        {% endif %}
+
+        <div class="mt-4">
+          <a href="{% url 'contact_cabinet' %}" class="btn btn-link text-muted">
+            <i class="bi bi-envelope"></i> Contact cabinet
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-6 text-center">
+        <img src="{% static 'images/home-dentist.png' %}" alt="Accueil du cabinet dentaire" class="img-fluid rounded shadow">
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Contact Cabinet{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-center" style="min-height:72vh;">
+    <div class="glass-card-home shadow p-4" style="max-width:480px; width:98vw; border-radius:2rem;">
+        <div class="mb-3 text-center" style="font-size:2.2rem; color:#2975d1;">
+            <i class="bi bi-envelope-open"></i>
+        </div>
+        <h2 class="mb-4 text-center home-title" style="color:#2975d1; font-weight:700;">
+            Contacter le cabinet
+        </h2>
+        <p class="lead text-center mb-4" style="font-weight:500; color:#3a4156;">
+            Pour toute question, prise de rendez-vous particulière ou information complémentaire, contactez-nous !
+        </p>
+        <ul class="list-group list-group-flush mb-4">
+            <li class="list-group-item bg-transparent border-0 ps-0">
+                <i class="bi bi-geo-alt me-2"></i>
+                <b>Adresse :</b> 123 Avenue des Sourires, 75000 Paris
+            </li>
+            <li class="list-group-item bg-transparent border-0 ps-0">
+                <i class="bi bi-telephone me-2"></i>
+                <b>Téléphone :</b> <a href="tel:0123456789">01 23 45 67 89</a>
+            </li>
+            <li class="list-group-item bg-transparent border-0 ps-0">
+                <i class="bi bi-envelope-at me-2"></i>
+                <b>Email :</b> <a href="mailto:contact@cabinetdentaire.fr">contact@cabinetdentaire.fr</a>
+            </li>
+        </ul>
+        <div class="alert alert-info mt-3 text-center rounded-4 border-0" style="background:#f0f6fd; color:#2975d1;">
+            <i class="bi bi-clock"></i> <b>Horaires :</b> Lundi au Vendredi – 9h à 19h
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'home' %}" class="btn btn-beige">
+                <i class="bi bi-arrow-left"></i> Retour à l'accueil
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

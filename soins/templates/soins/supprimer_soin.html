@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Supprimer un soin{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="alert alert-warning section-beige glass-card-home shadow text-center mt-5 mb-5" style="backdrop-filter: blur(7px); border-radius: 28px;">
+            <h2 class="mb-4" style="color: #d17729;">
+                <i class="bi bi-exclamation-triangle"></i> Confirmation de suppression
+            </h2>
+            <p class="mb-4">Êtes-vous sûr(e) de vouloir supprimer le soin suivant ?</p>
+            <ul class="list-group mb-3 text-start">
+                <li class="list-group-item bg-transparent border-0"><strong>Date du soin :</strong> {{ soin.date|date:"d/m/Y" }}</li>
+                <li class="list-group-item bg-transparent border-0"><strong>Patient :</strong> {{ soin.patient.get_full_name|default:soin.patient }}</li>
+                <li class="list-group-item bg-transparent border-0"><strong>Type de soin :</strong> {{ soin.type_soin.nom }}</li>
+                <li class="list-group-item bg-transparent border-0">
+                    <strong>Dentiste :</strong>
+                    {% if soin.dentiste %}
+                        Dr {{ soin.dentiste.get_full_name|default:soin.dentiste.username }}
+                    {% else %}
+                        <em>Non précisé</em>
+                    {% endif %}
+                </li>
+            </ul>
+            <form method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-lg me-2">
+                    <i class="bi bi-trash"></i> Oui, supprimer
+                </button>
+                <a href="{% url 'voir_patient' soin.patient.pk %}" class="btn btn-beige btn-lg">
+                    <i class="bi bi-arrow-left"></i> Annuler
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

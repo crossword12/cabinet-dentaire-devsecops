@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Détail du rendez-vous{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow mb-4 p-4">
+            <h2 class="mb-4 fw-bold text-primary">
+                <i class="bi bi-calendar-event"></i> Détail du rendez-vous
+            </h2>
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Date et heure</dt>
+                <dd class="col-sm-8 fw-bold"><i class="bi bi-clock"></i> {{ rdv.date_heure|date:"d/m/Y H:i" }}</dd>
+
+                <dt class="col-sm-4">Patient</dt>
+                <dd class="col-sm-8">{{ rdv.patient.nom }} {{ rdv.patient.prenom }}</dd>
+
+                <dt class="col-sm-4">Soin demandé</dt>
+                <dd class="col-sm-8">
+                    <span class="fw-bold">{{ rdv.soin.type_soin.nom }}</span> 
+                </dd>
+                <dt class="col-sm-4">Statut du rendez-vous</dt>
+                <dd class="col-sm-8">
+                    {% if rdv.statut == 'en_attente' %}
+                        <span class="badge bg-warning text-dark">En attente</span>
+                    {% elif rdv.statut == 'confirmé' %}
+                        <span class="badge bg-info text-dark">Confirmé</span>
+                    {% elif rdv.statut == 'refusé' %}
+                        <span class="badge bg-danger">Refusé</span>
+                    {% elif rdv.statut == 'annulé' %}
+                        <span class="badge bg-secondary">Annulé</span>
+                    {% elif rdv.statut == 'terminé' %}
+                        <span class="badge bg-success">Terminé</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Inconnu</span>
+                    {% endif %}
+                </dd>
+
+                {% if rdv.action_patient != 'aucune' %}
+                    <dt class="col-sm-4">Action du patient</dt>
+                    <dd class="col-sm-8">
+                        {% if rdv.action_patient == 'modification' %}
+                            <span class="badge bg-warning text-dark">Demande de modification</span>
+                            {% if rdv.nouvelle_date %}
+                                <br>
+                                <i class="bi bi-arrow-right"></i> Nouvelle date proposée : {{ rdv.nouvelle_date|date:"d/m/Y H:i" }}
+                            {% endif %}
+                        {% elif rdv.action_patient == 'annulation' %}
+                            <span class="badge bg-danger">Demande d'annulation</span>
+                        {% endif %}
+                    </dd>
+                {% endif %}
+            </dl>
+
+            <div class="mt-4 d-flex flex-wrap gap-2">
+                {% if user.is_authenticated and user.profile %}
+                    {% if user.profile.role == 'patient' %}
+                        <a href="{% url 'mes_rendezvous' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Retour à la liste
+                        </a>
+                        {% if rdv.statut == "confirmé" and rdv.action_patient == "aucune" %}
+                            <a href="{% url 'demander_modification_rendezvous' rdv.pk %}" class="btn btn-outline-primary">
+                                <i class="bi bi-pencil"></i> Demander modification
+                            </a>
+                            <form action="{% url 'demander_annulation_rendezvous' rdv.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger">
+                                    <i class="bi bi-x-circle"></i> Demander annulation
+                                </button>
+                            </form>
+                        {% elif rdv.action_patient == "modification" %}
+                            <span class="badge bg-warning text-dark">Modification en attente</span>
+                        {% elif rdv.action_patient == "annulation" %}
+                            <span class="badge bg-danger text-light">Annulation en attente</span>
+                        {% endif %}
+
+                    {% elif user.profile.role == 'secretaire' or user.profile.role == 'dentiste' %}
+                        <a href="{% url 'liste_rendezvous' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Retour à la liste
+                        </a>
+                        {% if rdv.action_patient == "modification" %}
+                            <form action="{% url 'valider_modification_rendezvous' rdv.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success me-1">
+                                    <i class="bi bi-check-circle"></i> Valider modification
+                                </button>
+                            </form>
+                            <form action="{% url 'refuser_demande_rendezvous' rdv.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Refuser
+                                </button>
+                            </form>
+                        {% elif rdv.action_patient == "annulation" %}
+                            <form action="{% url 'valider_annulation_rendezvous' rdv.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger me-1">
+                                    <i class="bi bi-check-circle"></i> Valider annulation
+                                </button>
+                            </form>
+                            <form action="{% url 'refuser_demande_rendezvous' rdv.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Refuser
+                                </button>
+                            </form>
+                        {% else %}
+                            <a href="{% url 'modifier_rendezvous' rdv.pk %}" class="btn btn-primary">
+                                <i class="bi bi-pencil"></i> Modifier
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card shadow p-4">
+            <h4 class="mb-3 text-primary">
+                <i class="bi bi-clock-history"></i> Historique du rendez-vous
+            </h4>
+            <ul class="list-group list-group-flush">
+                {% for historique in historiques %}
+                    <li class="list-group-item d-flex flex-column bg-transparent border-0">
+                        <div class="d-flex align-items-center mb-1">
+                            <i class="bi bi-clock me-2 text-secondary"></i>
+                            <strong>{{ historique.date_action|date:"d/m/Y H:i" }}</strong>
+                            <span class="ms-3 badge 
+                                {% if "modification" in historique.action %}
+                                    bg-warning text-dark
+                                {% elif "annulation" in historique.action %}
+                                    bg-danger
+                                {% elif "créé" in historique.action %}
+                                    bg-info text-dark
+                                {% elif "supprimé" in historique.action %}
+                                    bg-dark
+                                {% else %}
+                                    bg-secondary
+                                {% endif %}
+                            ">
+                                {{ historique.action|capfirst }}
+                            </span>
+                        </div>
+                        {% if historique.details %}
+                        <div class="ps-4">
+                            <pre class="mb-0 mt-1" style="font-size: 0.95em; white-space: pre-wrap;">{{ historique.details }}</pre>
+                        </div>
+                        {% endif %}
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted bg-transparent">Aucun historique pour ce rendez-vous.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

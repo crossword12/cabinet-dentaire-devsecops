@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Ajouter un patient{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height:80vh;">
+    <div class="profil-glass-card shadow">
+        <div class="text-center mb-3" style="font-size:2.2rem; color:#2975d1;">
+            <i class="bi bi-person-plus"></i>
+        </div>
+        <h2 class="mb-4 text-center home-title fw-bold" style="color:#2975d1;">
+            Ajouter un patient
+        </h2>
+        <form method="post" novalidate autocomplete="off">
+            {% csrf_token %}
+
+            <!-- Nom d'utilisateur -->
+            <div class="mb-3">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="text-danger small">{{ form.username.errors|striptags }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Mot de passe -->
+            <div class="mb-3">
+                {{ form.password.label_tag }}
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <div class="text-danger small">{{ form.password.errors|striptags }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Autres champs -->
+            {% for field in form %}
+                {% if field.name != 'username' and field.name != 'password' %}
+                    <div class="mb-3">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger small">{{ field.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger text-center mb-3">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn dl-btn-primary btn-lg">
+                    <i class="bi bi-check-circle me-1"></i> Ajouter le patient
+                </button>
+                <a href="{% url 'liste_patients' %}" class="btn btn-beige btn-lg">
+                    <i class="bi bi-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

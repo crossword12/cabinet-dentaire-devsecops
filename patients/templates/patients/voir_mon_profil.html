@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Mon profil patient{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-center" style="min-height:80vh;">
+    <div class="w-100 d-flex justify-content-center flex-column align-items-center">
+        <div class="profil-glass-card shadow">
+            <div class="login-icon mb-2 text-center" style="font-size:2.5rem; color:#2975d1;">
+                <i class="bi bi-person-badge"></i>
+            </div>
+            <h2 class="mb-4 text-center" style="color:#2975d1;font-weight:700;">Mon profil</h2>
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Nom</dt>
+                <dd class="col-sm-8">{{ patient.nom }}</dd>
+                <dt class="col-sm-4">Prénom</dt>
+                <dd class="col-sm-8">{{ patient.prenom }}</dd>
+                <dt class="col-sm-4">Date de naissance</dt>
+                <dd class="col-sm-8">{{ patient.date_naissance|date:"d/m/Y" }}</dd>
+                <dt class="col-sm-4">Téléphone</dt>
+                <dd class="col-sm-8">{{ patient.telephone|default:"-" }}</dd>
+                <dt class="col-sm-4">Email</dt>
+                <dd class="col-sm-8">{{ patient.email }}</dd>
+                <dt class="col-sm-4">Adresse</dt>
+                <dd class="col-sm-8">{{ patient.adresse|default:"-" }}</dd>
+                <dt class="col-sm-4">Date d'inscription</dt>
+                <dd class="col-sm-8">{{ patient.date_inscription|date:"d/m/Y" }}</dd>
+            </dl>
+            <div class="text-center mt-4">
+                <a href="{% url 'modifier_mon_profil' %}" class="btn dl-btn-primary w-75">
+                    <i class="bi bi-pencil"></i> Modifier mon profil
+                </a>
+            </div>
+        </div>
+
+        <!-- Bloc historique RDV/soins -->
+        <div class="profil-card mt-4">>
+            <h4 class="mb-3 mt-3" style="color:#2975d1;">
+                <i class="bi bi-clock-history"></i> Historique de mes rendez-vous et soins
+            </h4>
+            {% if rdvs %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="bg-white">
+                            <tr>
+                                <th>Date/Heure</th>
+                                <th>Statut</th>
+                                <th>Soin associé</th>
+                                <th>Dentiste</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rdv in rdvs %}
+                                <tr>
+                                    <td><b>{{ rdv.date_heure|date:"d/m/Y H:i" }}</b></td>
+                                    <td>
+                                        {% if rdv.statut == 'planifié' %}
+                                            <span class="badge bg-primary">Planifié</span>
+                                        {% elif rdv.statut == 'effectué' %}
+                                            <span class="badge bg-success">Effectué</span>
+                                        {% elif rdv.statut == 'annulé' %}
+                                            <span class="badge bg-secondary">Annulé</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark">{{ rdv.statut|capfirst }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if rdv.soin %}
+                                            <span class="badge bg-light text-dark">
+                                                {{ rdv.soin.type_soin.nom }}
+                                            </span>
+                                            <a href="{% url 'fiche_soin' rdv.soin.pk %}" class="btn btn-outline-primary btn-sm ms-1">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">Aucun</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if rdv.soin and rdv.soin.dentiste %}
+                                            Dr {{ rdv.soin.dentiste.last_name|capfirst }}
+                                        {% else %}
+                                            <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'voir_rendezvous' rdv.pk %}" class="btn btn-outline-primary btn-sm rounded-pill">
+                                            <i class="bi bi-eye"></i> Voir RDV
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                {% if rdvs.has_other_pages %}
+                    <nav>
+                        <ul class="pagination justify-content-center mt-3">
+                            {% if rdvs.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ rdvs.previous_page_number }}">&laquo;</a>
+                                </li>
+                            {% endif %}
+                            {% for num in rdvs.paginator.page_range %}
+                                {% if rdvs.number == num %}
+                                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                                {% else %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if rdvs.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ rdvs.next_page_number }}">&raquo;</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <p class="text-muted">Aucun rendez-vous ni soin enregistré pour l’instant.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

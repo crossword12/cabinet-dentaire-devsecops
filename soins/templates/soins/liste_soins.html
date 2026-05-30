@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Catalogue des soins{% endblock %}
+
+{% block content %}
+<div class="section-beige glass-card-home shadow mb-5 p-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 gap-3">
+        <h2 class="mb-0 home-title" style="color: #2975d1;">
+            <i class="bi bi-clipboard-heart"></i> Catalogue des soins
+        </h2>
+        {% if user.is_authenticated and user.profile %}
+            {% if user.profile.role == 'secretaire' or user.profile.role == 'dentiste' %}
+                <a href="{% url 'ajouter_type_soin' %}" class="btn dl-btn-primary btn-lg">
+                    <i class="bi bi-plus-circle"></i> Ajouter un soin
+                </a>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <form method="get" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="search" value="{{ request.GET.search }}" class="form-control" placeholder="Recherche (nom du soin)…">
+            <button type="submit" class="btn btn-beige"><i class="bi bi-search"></i></button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table align-middle table-hover rounded-4 overflow-hidden">
+            <thead class="bg-white">
+                <tr>
+                    <th>Nom du soin</th>
+                    <th>Description</th>
+                    <th>Tarif</th>
+                    <th>Taux remboursement</th>
+                    <th class="text-center">Détail</th>
+                    {% if user.is_authenticated and user.profile %}
+                        {% if user.profile.role == 'secretaire' or user.profile.role == 'dentiste' %}
+                            <th class="text-center">Actions</th>
+                        {% endif %}
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for type_soin in soins %}
+                    <tr>
+                        <td class="fw-bold">{{ type_soin.nom }}</td>
+                        <td>
+                            <span class="text-muted">{{ type_soin.description|truncatewords:12 }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark px-2 py-1">
+                                {{ type_soin.tarif|floatformat:2 }} DH
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-primary-light text-primary px-2 py-1">
+                                {{ type_soin.taux_remboursement }} %
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'detail_type_soin' type_soin.pk %}" class="btn btn-outline-info btn-sm rounded-pill" title="Voir la fiche">
+                                <i class="bi bi-eye"></i> Voir
+                            </a>
+                        </td>
+                        {% if user.is_authenticated and user.profile %}
+                            {% if user.profile.role == 'secretaire' or user.profile.role == 'dentiste' %}
+                                <td class="text-center">
+                                    <a href="{% url 'modifier_type_soin' type_soin.pk %}" class="btn btn-outline-primary btn-sm rounded-pill me-1" title="Modifier">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'supprimer_type_soin' type_soin.pk %}" class="btn btn-outline-danger btn-sm rounded-pill" title="Supprimer">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            {% endif %}
+                        {% endif %}
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="{% if user.is_authenticated and user.profile and user.profile.role == 'secretaire' %}6{% elif user.is_authenticated and user.profile and user.profile.role == 'dentiste' %}6{% else %}5{% endif %}" class="text-center text-muted">
+                            Aucun soin dans le catalogue.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if soins.has_other_pages %}
+        <nav>
+            <ul class="pagination justify-content-center mt-4">
+                {% if soins.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ soins.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">&laquo;</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                {% endif %}
+
+                {% for num in soins.paginator.page_range %}
+                    {% if soins.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if soins.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ soins.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">&raquo;</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+{% endblock %}

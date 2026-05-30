@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Détail du soin{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="section-beige glass-card-home shadow p-4 mt-5 mb-5">
+            <div class="mb-3 text-center" style="font-size:2.3rem; color:#2975d1;">
+                <i class="bi bi-clipboard2-pulse"></i>
+            </div>
+            <h2 class="mb-4 text-center home-title" style="color:#2975d1;">
+                Détail du soin
+            </h2>
+            <dl class="row mb-1">
+                <dt class="col-sm-5">Nom</dt>
+                <dd class="col-sm-7 fw-bold">{{ type_soin.nom }}</dd>
+
+                <dt class="col-sm-5">Tarif</dt>
+                <dd class="col-sm-7">
+                    <span class="badge bg-light text-dark px-2 py-1">{{ type_soin.tarif|floatformat:2 }} DH</span>
+                </dd>
+
+                <dt class="col-sm-5">Taux de remboursement</dt>
+                <dd class="col-sm-7">
+                    {% if type_soin.taux_remboursement %}
+                        <span class="badge bg-info text-dark">{{ type_soin.taux_remboursement }}%</span>
+                    {% else %}
+                        <span class="text-muted">Non remboursé</span>
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-5">Description</dt>
+                <dd class="col-sm-7">{{ type_soin.description|default:"—" }}</dd>
+            </dl>
+
+            <div class="text-center mt-4 d-flex justify-content-center gap-2 flex-wrap">
+                <a href="{% url 'liste_soins' %}" class="btn btn-beige">
+                    <i class="bi bi-arrow-left"></i> Retour au catalogue
+                </a>
+                {% if user.is_authenticated and user.profile %}
+                    {% if user.profile.role == 'secretaire' or user.profile.role == 'dentiste' %}
+                        <a href="{% url 'modifier_type_soin' type_soin.pk %}" class="btn btn-outline-primary">
+                            <i class="bi bi-pencil"></i> Modifier
+                        </a>
+                        <a href="{% url 'supprimer_type_soin' type_soin.pk %}" class="btn btn-outline-danger">
+                            <i class="bi bi-trash"></i> Supprimer
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

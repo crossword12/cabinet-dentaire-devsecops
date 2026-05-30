@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Demander l’annulation du rendez-vous{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="card shadow p-4 mt-4 mb-5">
+            <h2 class="mb-4 text-center fw-bold text-danger">
+                <i class="bi bi-x-circle"></i> Demander l’annulation
+            </h2>
+            <div class="alert alert-warning text-center rounded-4 mb-4">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <b>Attention&nbsp;:</b> Cette action enverra une demande d’annulation au secrétariat.<br>
+                Le rendez-vous ne sera annulé qu’après validation.
+            </div>
+            <dl class="row mb-4">
+                <dt class="col-sm-5">Date et heure</dt>
+                <dd class="col-sm-7"><b><i class="bi bi-clock"></i> {{ rdv.date_heure|date:"d/m/Y H:i" }}</b></dd>
+                <dt class="col-sm-5">Soin demandé</dt>
+                <dd class="col-sm-7">
+                    {% if rdv.soin %}
+                        <span class="fw-semibold">{{ rdv.soin.type_soin.nom }}</span>
+                    {% else %}
+                        <span class="text-muted">Aucun</span>
+                    {% endif %}
+                </dd>
+            </dl>
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-danger btn-lg">
+                        <i class="bi bi-x-circle"></i> Envoyer la demande d’annulation
+                    </button>
+                    <a href="{% url 'mes_rendezvous' %}" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-arrow-left"></i> Retour à mes rendez-vous
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

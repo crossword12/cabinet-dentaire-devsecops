@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Modifier un soin{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="section-beige glass-card-home shadow p-4 mt-5 mb-5">
+            <h2 class="mb-4 text-center home-title" style="color:#2975d1;">
+                <i class="bi bi-pencil-square"></i> Modifier le soin
+            </h2>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger text-center mb-3">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                {% if not form.fields.patient.widget.is_hidden %}
+                    <div class="mb-3">
+                        {{ form.patient.label_tag }}
+                        {{ form.patient }}
+                        {% if form.patient.errors %}
+                            <div class="text-danger small">{{ form.patient.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    {{ form.type_soin.label_tag }}
+                    {{ form.type_soin }}
+                    {% if form.type_soin.errors %}
+                        <div class="text-danger small">{{ form.type_soin.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="mb-2 small text-muted">
+                    Tarif : {{ form.instance.type_soin.tarif }} DH &nbsp;|&nbsp;
+                    Remboursement : {{ form.instance.type_soin.taux_remboursement }} %
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.date.label_tag }}
+                        {{ form.date }}
+                        {% if form.date.errors %}
+                            <div class="text-danger small">{{ form.date.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form.dentiste.label_tag }}
+                        {{ form.dentiste }}
+                        {% if form.dentiste.errors %}
+                            <div class="text-danger small">{{ form.dentiste.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form.notes.label_tag }}
+                    {{ form.notes }}
+                    {% if form.notes.errors %}
+                        <div class="text-danger small">{{ form.notes.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="text-center mt-4 d-grid gap-2">
+                    <button type="submit" class="btn dl-btn-primary btn-lg">
+                        <i class="bi bi-check-circle me-1"></i> Enregistrer
+                    </button>
+                    <a href="{% url 'voir_patient' form.instance.patient.pk %}" class="btn btn-beige btn-lg">
+                        <i class="bi bi-arrow-left"></i> Retour fiche patient
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

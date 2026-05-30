@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Demander un rendez-vous{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="card shadow p-4 mt-4 mb-5">
+            <h2 class="mb-4 text-center fw-bold text-primary">
+                <i class="bi bi-calendar-plus"></i> Demander un rendez-vous
+            </h2>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} text-center">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger text-center mb-3">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                {% for field in form %}
+                    {% if not field.is_hidden %}
+                        <div class="mb-3">
+                            {{ field.label_tag }}{{ field }}
+                            {% if field.help_text %}
+                                <div class="form-text small text-muted">{{ field.help_text }}</div>
+                            {% endif %}
+                            {% if field.errors %}
+                                <div class="text-danger small">
+                                    {% for error in field.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+                <div class="alert alert-info text-center mb-3">
+                    Après votre demande, le secrétariat validera ou refusera le rendez-vous.  
+                    <br>Vous recevrez une notification dans votre espace patient.
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-send-check"></i> Envoyer la demande
+                    </button>
+                    <a href="{% url 'mes_rendezvous' %}" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-arrow-left"></i> Retour à mes rendez-vous
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

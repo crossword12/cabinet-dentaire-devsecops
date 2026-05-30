@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Supprimer un soin du catalogue{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7 col-lg-6">
+    <div class="alert alert-warning section-beige glass-card-home shadow text-center mt-5" style="backdrop-filter: blur(7px); border-radius: 28px;">
+      <div class="mb-3" style="font-size:2.5rem;color:#d9534f;">
+        <i class="bi bi-exclamation-triangle"></i>
+      </div>
+      <h2 class="mb-4 fw-bold" style="color:#d9534f;">Supprimer ce soin ?</h2>
+      <p class="lead mb-3">
+        <b>{{ type_soin.nom }}</b>
+        <span class="badge bg-light text-dark ms-2">{{ type_soin.tarif|floatformat:2 }} DH</span>
+      </p>
+      {% if type_soin.taux_remboursement %}
+        <p class="mb-3 text-muted">
+          Remboursement : <b>{{ type_soin.taux_remboursement }}%</b>
+        </p>
+      {% endif %}
+      <form method="post" class="mb-0 d-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger btn-lg me-2">
+          <i class="bi bi-trash"></i> Confirmer la suppression
+        </button>
+        <a href="{% url 'liste_soins' %}" class="btn btn-beige btn-lg">
+          <i class="bi bi-arrow-left"></i> Annuler
+        </a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

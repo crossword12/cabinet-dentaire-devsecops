@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Fiche soin - {{ soin.type_soin.nom }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="section-beige glass-card-home shadow p-4 mt-5 mb-5">
+            <div class="mb-3 text-center" style="font-size:2.3rem; color:#2975d1;">
+                <i class="bi bi-file-earmark-medical"></i>
+            </div>
+            <h2 class="mb-4 text-center home-title" style="color:#2975d1;">
+                Détail du soin réalisé
+            </h2>
+
+            <dl class="row mb-1">
+                <dt class="col-sm-5">Nom du soin</dt>
+                <dd class="col-sm-7 fw-bold">{{ soin.type_soin.nom }}</dd>
+
+                <dt class="col-sm-5">Date du rendez-vous</dt>
+                <dd class="col-sm-7">
+                    {{ soin.rendezvous.date_heure|date:"d/m/Y H:i" }}
+                    <br>
+                    <small class="text-muted">(Créé via le rendez-vous)</small>
+                </dd>
+
+                <dt class="col-sm-5">Dentiste</dt>
+                <dd class="col-sm-7">
+                    {% if soin.dentiste %}
+                        {{ soin.dentiste.get_full_name|default:soin.dentiste.username }}
+                    {% else %}
+                        <span class="text-muted">—</span>
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-5">Tarif</dt>
+                <dd class="col-sm-7">
+                    <span class="badge bg-light text-dark px-2 py-1">
+                        {{ soin.type_soin.tarif|floatformat:2 }} DH
+                    </span>
+                </dd>
+
+                <dt class="col-sm-5">Taux de remboursement</dt>
+                <dd class="col-sm-7">
+                    {% if soin.type_soin.taux_remboursement %}
+                        <span class="badge bg-info text-dark">{{ soin.type_soin.taux_remboursement }} %</span>
+                    {% else %}
+                        <span class="text-muted">Non remboursé</span>
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-5">Notes</dt>
+                <dd class="col-sm-7">{{ soin.notes|default:"—" }}</dd>
+
+                <dt class="col-sm-5">Statut</dt>
+                <dd class="col-sm-7">
+                    {% if soin.statut == "en_attente" %}
+                        <span class="badge bg-warning text-dark">En attente</span>
+                    {% elif soin.statut == "validé" %}
+                        <span class="badge bg-success">Validé</span>
+                    {% elif soin.statut == "refusé" %}
+                        <span class="badge bg-danger">Refusé</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Inconnu</span>
+                    {% endif %}
+                </dd>
+            </dl>
+
+            <div class="text-center mt-4 d-flex flex-wrap justify-content-center gap-2">
+                {% if user.is_authenticated and user.profile %}
+                    {% if user.profile.role == 'secretaire' or user.profile.role == 'dentiste' %}
+                        <a href="{% url 'modifier_soin' soin.pk %}" class="btn dl-btn-primary me-2">
+                            <i class="bi bi-pencil"></i> Modifier
+                        </a>
+                        <a href="{% url 'voir_patient' soin.patient.pk %}" class="btn btn-beige">
+                            <i class="bi bi-arrow-left"></i> Retour fiche patient
+                        </a>
+                    {% elif user.profile.role == 'patient' %}
+                        <a href="{% url 'voir_mes_soins' %}" class="btn btn-beige">
+                            <i class="bi bi-arrow-left"></i> Retour à mes soins
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

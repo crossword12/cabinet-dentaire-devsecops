@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Demande de modification{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="card shadow p-4 mt-4 mb-5">
+            <h2 class="mb-4 text-center fw-bold text-primary">
+                <i class="bi bi-pencil-square"></i> Demander la modification du rendez-vous
+            </h2>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger text-center mb-3">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+                <div class="mb-3">
+                    {{ form.date_heure.label_tag }}
+                    {{ form.date_heure }}
+                    {% if form.date_heure.errors %}
+                        <div class="text-danger small">{{ form.date_heure.errors }}</div>
+                    {% endif %}
+                </div>
+                {# Optionnel : type_soin, si tu veux le laisser modifiable par le patient #}
+                {% if form.type_soin %}
+                <div class="mb-3">
+                    {{ form.type_soin.label_tag }}
+                    {{ form.type_soin }}
+                    {% if form.type_soin.errors %}
+                        <div class="text-danger small">{{ form.type_soin.errors }}</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-check-circle"></i> Envoyer la demande
+                    </button>
+                    <a href="{% url 'mes_rendezvous' %}" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-arrow-left"></i> Retour
+                    </a>
+                </div>
+            </form>
+            <div class="alert alert-info mt-4 text-center rounded-4">
+                <i class="bi bi-info-circle"></i>
+                La modification sera effective après validation du secrétariat.<br>
+                Vous recevrez un statut <b>En attente</b> jusqu'à la validation.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

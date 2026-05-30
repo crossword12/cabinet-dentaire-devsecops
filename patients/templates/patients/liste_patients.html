@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Liste des patients{% endblock %}
+
+{% block content %}
+<div class="main-card py-5" style="width:98vw;max-width:1400px;margin:auto;min-height:76vh;">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <h2 class="mb-3 mb-md-0 fw-bold" style="color:#2975d1;">
+            <i class="bi bi-people-fill"></i> Patients du cabinet
+        </h2>
+        <a href="{% url 'ajouter_patient' %}" class="btn dl-btn-primary btn-lg">
+            <i class="bi bi-plus-circle me-1"></i> Nouveau patient
+        </a>
+    </div>
+
+    <form method="get" class="mb-4">
+        <div class="input-group" style="max-width:400px;">
+            <input type="text" name="search" value="{{ request.GET.search }}" class="form-control" placeholder="Recherche (nom, prénom, email)...">
+            <button type="submit" class="btn btn-beige"><i class="bi bi-search"></i></button>
+        </div>
+    </form>
+
+    <div class="table-responsive rounded-4">
+        <table class="table table-hover align-middle bg-white shadow rounded-4 overflow-hidden">
+            <thead class="bg-white">
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Date de naissance</th>
+                    <th>Email</th>
+                    <th>Téléphone</th>
+                    <th>Adresse</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                    <tr>
+                        <td>{{ patient.nom }}</td>
+                        <td>{{ patient.prenom }}</td>
+                        <td>{{ patient.date_naissance|date:"d/m/Y" }}</td>
+                        <td>{{ patient.email }}</td>
+                        <td>{{ patient.telephone|default:"—" }}</td>
+                        <td>{{ patient.adresse|default:"—" }}</td>
+                        <td class="text-center">
+                            <a href="{% url 'voir_patient' patient.pk %}" class="btn btn-outline-primary btn-sm rounded-pill me-1" title="Voir">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{% url 'modifier_patient' patient.pk %}" class="btn btn-outline-primary btn-sm rounded-pill me-1" title="Modifier">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form action="{% url 'supprimer_patient' patient.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill" title="Supprimer" onclick="return confirm('Confirmer la suppression de ce patient ?');">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">Aucun patient trouvé.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if patients.has_other_pages %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if patients.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ patients.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">&laquo;</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                {% endif %}
+                {% for num in patients.paginator.page_range %}
+                    {% if patients.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if patients.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ patients.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">&raquo;</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+{% endblock %}

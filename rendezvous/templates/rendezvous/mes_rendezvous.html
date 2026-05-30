@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mes rendez-vous{% endblock %}
+
+{% block content %}
+<div class="card p-4 shadow mb-4">
+    <h2 class="mb-4 fw-bold text-primary">
+        <i class="bi bi-calendar2-heart"></i> Mes rendez-vous à venir
+    </h2>
+    {% if rendezvous %}
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            {% for rdv in rendezvous %}
+                <div class="col">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title mb-2 text-primary">
+                                <i class="bi bi-clock"></i> {{ rdv.date_heure|date:"d/m/Y H:i" }}
+                            </h5>
+                            <p class="card-text mb-1">
+                                <strong>Soin demandé :</strong>
+                                {% if rdv.soin %}
+                                    <span class="fw-semibold">{{ rdv.soin.type_soin.nom }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </p>
+                            <p class="card-text mb-3">
+                                <strong>Statut :</strong>
+                                {% if rdv.statut == 'en_attente' %}
+                                    <span class="badge bg-warning text-dark">En attente</span>
+                                {% elif rdv.statut == 'confirmé' %}
+                                    <span class="badge bg-primary">Confirmé</span>
+                                {% elif rdv.statut == 'refusé' %}
+                                    <span class="badge bg-danger">Refusé</span>
+                                {% elif rdv.statut == 'annulé' %}
+                                    <span class="badge bg-secondary">Annulé</span>
+                                {% elif rdv.statut == 'terminé' %}
+                                    <span class="badge bg-success">Terminé</span>
+                                {% else %}
+                                    <span class="badge bg-light text-dark">Inconnu</span>
+                                {% endif %}
+                            </p>
+                            <div class="mt-auto text-end">
+                                <a href="{% url 'voir_rendezvous' rdv.pk %}" class="btn btn-outline-primary btn-sm rounded-pill me-1 mb-1">
+                                    <i class="bi bi-eye"></i> Voir le détail
+                                </a>
+                                {% if rdv.statut == "confirmé" and rdv.action_patient == "aucune" %}
+                                    <a href="{% url 'demander_modification_rendezvous' rdv.pk %}" class="btn btn-outline-primary btn-sm rounded-pill me-1 mb-1">
+                                        <i class="bi bi-pencil"></i> Demander modification
+                                    </a>
+                                    <form action="{% url 'demander_annulation_rendezvous' rdv.pk %}" method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill mb-1">
+                                            <i class="bi bi-x-circle"></i> Demander annulation
+                                        </button>
+                                    </form>
+                                {% elif rdv.action_patient == "modification" %}
+                                    <span class="badge bg-warning text-dark mb-1">Modification en attente</span>
+                                {% elif rdv.action_patient == "annulation" %}
+                                    <span class="badge bg-warning text-dark mb-1">Annulation en attente</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="mt-4">
+            {% if rendezvous.has_other_pages %}
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        {% if rendezvous.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ rendezvous.previous_page_number }}">&laquo;</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                        {% endif %}
+                        {% for num in rendezvous.paginator.page_range %}
+                            {% if rendezvous.number == num %}
+                                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if rendezvous.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ rendezvous.next_page_number }}">&raquo;</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    {% else %}
+        <p class="text-muted">Vous n’avez pas de rendez-vous à venir.</p>
+    {% endif %}
+</div>
+{% endblock %}
