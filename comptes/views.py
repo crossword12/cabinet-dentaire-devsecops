@@ -6,6 +6,7 @@ from .models import Secretaire, Dentiste
 from django.utils import timezone
 from rendezvous.models import RendezVous
 from .models import Profile
+from django.core.exceptions import PermissionDenied
 
 def register(request):
     if request.method == 'POST':
@@ -122,3 +123,6 @@ def dashboard(request):
 
     messages.error(request, "Rôle utilisateur inconnu.")
     return redirect('logout')
+
+def patients_interdit(request):
+    raise PermissionDenied("Vous n’avez pas les droits pour accéder à cette page.")

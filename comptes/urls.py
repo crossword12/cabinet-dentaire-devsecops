@@ -7,6 +7,9 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('contact/', views.contact_cabinet, name='contact_cabinet'),
 
+    # Page interdite pour /comptes/patients/
+    path('patients/', views.patients_interdit, name='comptes_patients_interdit'),
+
 
     # Auth
     path('login/', auth_views.LoginView.as_view(template_name='comptes/login.html'), name='login'),
