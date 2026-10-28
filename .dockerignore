@@ -1,15 +1,44 @@
+# Python
 venv/
+env/
+.venv/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
+# Git
 .git/
 .gitignore
 
+# Environment variables
 .env
+.env.*
+!.env.example
 
+# Secrets and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Databases and backups
+*.sqlite3
+*.db
+*.bak
+*.sql.gz
+
+# IDE and macOS
 .vscode/
+.idea/
 .DS_Store
 
+# Logs and reports
 *.log
+bandit_report.txt
+trivy_report*.txt
+trivy_high_critical*.txt
+
+# Local and unnecessary files
+*.tar
+tests/
