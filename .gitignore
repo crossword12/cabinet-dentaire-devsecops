@@ -29,3 +29,18 @@ trivy_high_critical*.txt
 
 # Docker
 *.tar
+
+# Additional environment files
+.env.*
+!.env.example
+
+# Secrets and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Database backups
+*.sqlite3
+*.sql.gz
+*.bak
